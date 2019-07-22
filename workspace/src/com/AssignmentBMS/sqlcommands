@@ -1,0 +1,8 @@
+create table book(ISBN varchar(5) primary key not null,title varchar(10) not null,category varchar(10),quantity int default 0);
+
+create table author(name varchar(10) primary key not null,mailID varchar(10),ISBN varchar(10) not null, foreign key (ISBN) references book(ISBN));
+
+create table student(name varchar(10) not null,USN varchar(5) primary key not null);
+
+create table issue(ID int primary key not null AUTO_INCREMENT,USN varchar(5) not null,issueDate date not null,returnDate date not null,
+ISBN varchar(5) not null,foreign key (USN) references student(USN),foreign key (ISBN) references book(ISBN));
