@@ -24,23 +24,42 @@ public class BMSOperations {
         String category = scanner.next();
         System.out.println("Enter No of books");
         int quantity = scanner.nextInt();
-        String sql="insert into book(ISBN,title,category,quantity) values(?,?,?,?)";
-        int rows=0;
+        Book s = new Book(title,ISBN,category,quantity);
+
+        System.out.println("Enter author name");
+        String authorName1 = scanner.nextLine();
+        String authorName = scanner.nextLine();
+        System.out.println("Enter author mailID");
+        String authorID = scanner.next();
+        Author a = new Author(authorName,authorID);
+        String sql1="insert into book(ISBN,title,category,quantity) values(?,?,?,?)";
+        String sql2="insert into author(name,mailID,ISBN) values(?,?,?)";
         try(Connection conn = DBConnectionManager.getConnection()){
-            PreparedStatement ps = conn.prepareStatement(sql);
+            PreparedStatement ps = conn.prepareStatement(sql1);
             ps.setString(1,ISBN);
             ps.setString(2,title);
             ps.setString(3,category);
             ps.setInt(4,quantity);
-            rows=ps.executeUpdate();
-        }catch (SQLException se){
-            se.printStackTrace();
-        }
-        if(rows>0){
-            System.out.println("Book added successfully");
-        }
-        else{
-            System.out.println("Adding operation failed");
+            int rows=ps.executeUpdate();
+            if(rows>0){
+                System.out.println("Book added successfully");
+            }else{
+                System.out.println("Problem in adding a book");
+            }
+            ps = conn.prepareStatement(sql2);
+            ps.setString(1,authorName);
+            ps.setString(2,authorID);
+            ps.setString(3,ISBN);
+            rows = ps.executeUpdate();
+            if(rows>0){
+                    System.out.println("Author added successfully");
+                }
+                else{
+                    System.out.println("Failed to add author");
+                }
+            }
+        catch (SQLException e){
+            e.printStackTrace();
         }
     }
 
@@ -53,10 +72,13 @@ public class BMSOperations {
             ps.setString(1,title);
             ResultSet rs = ps.executeQuery();
             if(rs!=null && rs.next()){
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
+                System.out.println("ISBN : " + rs.getString(1));
+                System.out.println("Title  : " + rs.getString(2));
+                System.out.println("Category + " + rs.getString(3));
+                System.out.println("Quantity + " + rs.getString(4));
+            }
+            else{
+                System.out.println("Book doesn't exist");
             }
         }catch (SQLException se){
             se.printStackTrace();
@@ -72,10 +94,13 @@ public class BMSOperations {
             ps.setString(1,category);
             ResultSet rs = ps.executeQuery();
             if(rs!=null && rs.next()){
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
+                System.out.println("ISBN : " + rs.getString(1));
+                System.out.println("Title  : " + rs.getString(2));
+                System.out.println("Category + " + rs.getString(3));
+                System.out.println("Quantity + " + rs.getString(4));
+            }
+            else{
+                System.out.println("Book doesn't exist");
             }
         }catch (SQLException se){
             se.printStackTrace();
@@ -83,17 +108,17 @@ public class BMSOperations {
     }
 
     public static void searchAuthor(){
-        System.out.println("Enter category to search");
+        System.out.println("Enter author to search");
         String author=scanner.next();
-        String sql="select * from book where category=?";
+        String sql="select * from author where name=?";
         try(Connection conn = new DBConnectionManager().getConnection()){
             PreparedStatement ps = conn.prepareStatement(sql);
             ps.setString(1,author);
             ResultSet rs = ps.executeQuery();
             if(rs!=null && rs.next()){
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
+                System.out.println("Author name is  : " + rs.getString(1));
+                System.out.println("Author ID is : " + rs.getString(2));
+                System.out.println("ISBN is : " + rs.getString( 3));
             }
         }catch (SQLException se){
             se.printStackTrace();
@@ -102,18 +127,25 @@ public class BMSOperations {
 
     public static void list(){
         String sql="select * from book";
-        List<String> list = new ArrayList<String>();
+        List<Book> list = new ArrayList<Book>();
         try(Connection conn = new DBConnectionManager().getConnection()){
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while(rs!=null && rs.next()){
-                list.add(rs.getString(1));
+                String title,ISBN,category;
+                int quantity;
+                title=rs.getString(1);
+                ISBN=rs.getString(2);
+                category=rs.getString(3);
+                quantity=Integer.parseInt(rs.getString(4));
+                Book b = new Book(title,ISBN,category,quantity);
+                list.add(b);
             }
         }catch (SQLException se){
             se.printStackTrace();
         }
         int i=0;
-        while(list.isEmpty()){
+        while(list.contains(1)){
             System.out.println(list.get(i++));
         }
     }

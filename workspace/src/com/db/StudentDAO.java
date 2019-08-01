@@ -13,11 +13,6 @@ import java.util.Vector;
 
 public class StudentDAO {
 
-    public boolean delete(int )
-    {
-        String sql = "delete from student2 where rollNo=? and "
-    }
-
     public DefaultTableModel getTableModel()
     {
         String sql = "select rollNo,name from student2";

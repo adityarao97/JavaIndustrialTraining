@@ -32,7 +32,7 @@ public class TableDemo extends JFrame {
                 TableModel model = jtable.getModel();
                 String strRollNo = (String)model.getValueAt(idx,0);
                 int rollNo = Integer.parseInt(strRollNo);
-                StudentService.create(rollNo);
+//                StudentService.create(rollNo);
                 jtable.setModel(StudentService.getTableModel());
             }
         });
